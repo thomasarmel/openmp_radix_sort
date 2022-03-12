@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "config.h"
 #include "radix_sort.h"
 
@@ -23,6 +24,15 @@ int main(int argc, char *argv[])
 int* read_input_array(Config *config)
 {
     int *array = (int*)malloc(sizeof(int) * config->array_size);
+    if (config->input_file == NULL)
+    {
+        srand(time(NULL));
+        for (int i = 0; i < config->array_size; i++)
+        {
+            array[i] = rand() % (config->N + 1);
+        }
+        return array;
+    }
     char *line = NULL;
     size_t len = 0;
     if (getline(&line, &len, config->input_file) == -1)

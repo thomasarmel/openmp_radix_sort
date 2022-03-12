@@ -22,7 +22,7 @@ Config init_config(int argc, char **argv)
         exit(1);
     }
     int argvOffset = 3;
-    config.input_file = stdin;
+    config.input_file = NULL;
     if (argc > 5 || (argc == 5 && atoi(argv[4]) <= 0))
     {
         config.input_file = fopen(argv[3], "r");
