@@ -19,13 +19,17 @@ int main(int argc, char *argv[])
         omp_set_num_threads(config.nb_threads);
     }
     int *A = read_input_array(&config);
-    fprintf(config.output_file, "N=%d Size=%d Threads=%d Time_in_microsec=549\n", config.N, config.array_size, omp_get_max_threads());
-    print_array(&config, A);
+    int* original_array = (int*) malloc(config.array_size * sizeof(int));
+    memcpy(original_array, A, config.array_size * sizeof(int));
+
     gettimeofday(&start_elapsed_time, NULL);
     radix_sort(A, config.array_size, config.N);
     gettimeofday(&end_elapsed_time, NULL);
-    long elapsed = ((end_elapsed_time.tv_sec - start_elapsed_time.tv_sec) * 1000000) + (end_elapsed_time.tv_usec - start_elapsed_time.tv_usec);
-    printf("Elapsed time: %ld microseconds\n", elapsed);
+
+    long elapsed_time = ((end_elapsed_time.tv_sec - start_elapsed_time.tv_sec) * 1000000) + (end_elapsed_time.tv_usec - start_elapsed_time.tv_usec);
+    printf("Elapsed time: %ld microseconds\n", elapsed_time);
+    fprintf(config.output_file, "N=%d Size=%d Threads=%d Time_in_microsec=%ld\n", config.N, config.array_size, omp_get_max_threads(), elapsed_time);
+    print_array(&config, original_array);
     print_array(&config, A);
     clean_config(&config);
     return 0;

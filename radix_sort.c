@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "radix_sort.h"
 
 struct {
@@ -25,22 +26,21 @@ void radix_sort(int *array, int size, int max_value)
     int nb_bits = (int)log2(max_value) + 1;
     for(int i = 0; i < nb_bits; i++)
     {
+        #pragma omp parallel for
         for(int j = 0; j < size; j++)
         {
             radix_global_pre_allocated_heap_arrays.radix_sort_bits_for_i[j] = (array[j] >> i) & 1;
         }
 
         split(array, radix_global_pre_allocated_heap_arrays.radix_sort_bits_for_i, radix_global_pre_allocated_heap_arrays.radix_sort_tmp_array, size);
-        for (int j = 0; j < size; ++j)
-        {
-            array[j] = radix_global_pre_allocated_heap_arrays.radix_sort_tmp_array[j];
-        }
+        memcpy(array, radix_global_pre_allocated_heap_arrays.radix_sort_tmp_array, size * sizeof(int));
     }
     free_heap_arrays();
 }
 
 void permute(const int *input_array, const int *indexes_array, int *output_array, int array_size)
 {
+    #pragma omp parallel for
     for(int i = 0; i < array_size; i++)
     {
         output_array[indexes_array[i]] = input_array[i];
@@ -52,10 +52,12 @@ void split(int *input_array, int *flags, int *output_array, int array_size)
     revert(flags, radix_global_pre_allocated_heap_arrays.split_reversed_flags, array_size);
     prefix(radix_global_pre_allocated_heap_arrays.split_reversed_flags, radix_global_pre_allocated_heap_arrays.split_ldown, array_size);
     suffix(flags, radix_global_pre_allocated_heap_arrays.split_lup, array_size);
+    #pragma omp parallel for
     for(int i = 0; i < array_size; i++)
     {
         radix_global_pre_allocated_heap_arrays.split_lup[i] = (array_size + 1) - radix_global_pre_allocated_heap_arrays.split_lup[i];
     }
+    #pragma omp parallel for
     for(int i = 0; i < array_size; i++)
     {
         if(flags[i] == 1)
@@ -90,6 +92,7 @@ void suffix(const int *flags, int *output_array, int array_size)
 
 void revert(const int *input_array, int *output_array, int array_size)
 {
+    #pragma omp parallel for
     for(int i = 0; i < array_size; i++)
     {
         output_array[i] = !input_array[i];
