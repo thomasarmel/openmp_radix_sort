@@ -3,7 +3,7 @@ project(radix_sort)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(radix_sort main.c config.h config.c)
+add_executable(radix_sort main.c config.h config.c radix_sort.h radix_sort.c)
 
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)

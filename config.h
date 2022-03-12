@@ -6,14 +6,14 @@
 struct _config
 {
     int N;
-    int arraySize;
-    FILE *inputFile;
-    FILE *outputFile;
-    int nbThreads;
+    int array_size;
+    FILE *input_file;
+    FILE *output_file;
+    int nb_threads;
 };
 typedef struct _config Config;
 
-Config initConfig(int argc, char **argv);
-void cleanConfig(Config *config);
+Config init_config(int argc, char **argv);
+void clean_config(Config *config);
 
 #endif //RADIX_SORT_CONFIG_H
