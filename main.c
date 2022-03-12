@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
     print_array(&config, original_array);
     print_array(&config, A);
     clean_config(&config);
+    free(original_array);
+    free(A);
     return 0;
 }
 
@@ -62,6 +64,7 @@ int* read_input_array(Config *config)
         token = strtok(NULL, " ");
         i++;
     }
+    free(line);
     return array;
 }
 

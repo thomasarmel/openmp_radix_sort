@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-struct _config
+struct config
 {
     int N;
     int array_size;
@@ -11,7 +11,7 @@ struct _config
     FILE *output_file;
     int nb_threads;
 };
-typedef struct _config Config;
+typedef struct config Config;
 
 Config init_config(int argc, char **argv);
 void clean_config(Config *config);

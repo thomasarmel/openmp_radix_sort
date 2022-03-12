@@ -2,6 +2,7 @@
 #include <math.h>
 #include <string.h>
 #include "radix_sort.h"
+#include "parallel_prefix_suffix.h"
 
 struct {
     int *radix_sort_bits_for_i;
@@ -79,6 +80,8 @@ void prefix(const int *flags, int *output_array, int array_size)
     {
         output_array[i] = output_array[i - 1] + flags[i];
     }
+    /*memcpy(output_array, flags, array_size * sizeof(int));
+    parallel_prefix(output_array, array_size);*/
 }
 
 void suffix(const int *flags, int *output_array, int array_size)
