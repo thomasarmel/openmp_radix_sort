@@ -4,7 +4,7 @@
 
 struct tablo
 {
-    int * tab;
+    int *tab;
     int size;
 };
 

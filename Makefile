@@ -2,8 +2,8 @@ CC = gcc
 CFLAGS = -fopenmp -Wall -O3
 CLIBS = -lm
 
-all: main.o config.o parallel_prefix_suffix.o radix_sort.o
-	$(CC) -o radix_sort main.o config.o parallel_prefix_suffix.o radix_sort.o $(CFLAGS) $(CLIBS)
+all: main.o config.o radix_sort.o
+	$(CC) -o radix_sort main.o config.o radix_sort.o $(CFLAGS) $(CLIBS)
 
 parallel_prefix_suffix: main.o config.o parallel_prefix_suffix.o radix_sort_par_pre_suf.o
 	$(CC) -o radix_sort main.o config.o parallel_prefix_suffix.o radix_sort_par_pre_suf.o $(CFLAGS) $(CLIBS)
