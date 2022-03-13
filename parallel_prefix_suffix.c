@@ -15,7 +15,7 @@ void parallel_suffix_sum(struct tablo *tablo);
 
 void parallel_prefix(int *tab, int size)
 {
-    int max_log_size = log2(size);
+    int max_log_size = (int)log2(size);
     int previous_max_prefix = 0;
     int offset = 0;
     for(int i = max_log_size; i >= 0; i--)
@@ -95,12 +95,13 @@ void parallel_prefix_sum(struct tablo *tablo)
     {
         old_tab[i] = tablo->tab[i + (tablo->size / 2)];
     }
-    int nbSteps = (int) log2(tablo->size / 2) - 1;
+    int nbSteps = (int)log2(tablo->size / 2) - 1;
     // ascendant step
     for(int l = nbSteps; l>=0; l--)
     {
+        const int step_max = 1 << (l + 1);
 #pragma omp parallel for
-        for(int j = pow(2, l); j < (int)pow(2, l+1); j++)
+        for(int j = 1 << l; j < step_max; j++)
         {
             tablo->tab[j] = tablo->tab[2*j] + tablo->tab[2*j + 1];
         }
@@ -109,8 +110,9 @@ void parallel_prefix_sum(struct tablo *tablo)
     tablo->tab[1] = 0;
     for(int l = 0; l<=nbSteps; l++)
     {
+        const int step_max = 1 << (l + 1);
 #pragma omp parallel for
-        for(int j = pow(2, l); j < (int)pow(2, l+1); j++)
+        for(int j = 1 << l; j < step_max; j++)
         {
             tablo->tab[2*j + 1] = tablo->tab[2*j] + tablo->tab[j];
             tablo->tab[2*j] = tablo->tab[j];
@@ -136,8 +138,9 @@ void parallel_suffix_sum(struct tablo *tablo)
     // ascendant step
     for(int l = nbSteps; l>=0; l--)
     {
+        const int step_max = 1 << (l + 1);
 #pragma omp parallel for
-        for(int j = pow(2, l); j < (int)pow(2, l+1); j++)
+        for(int j = 1 << l; j < step_max; j++)
         {
             tablo->tab[j] = tablo->tab[2*j] + tablo->tab[2*j + 1];
         }
@@ -146,8 +149,9 @@ void parallel_suffix_sum(struct tablo *tablo)
     tablo->tab[1] = 0;
     for(int l = 0; l<=nbSteps; l++)
     {
+        const int step_max = 1 << (l + 1);
 #pragma omp parallel for
-        for(int j = pow(2, l); j < (int)pow(2, l+1); j++)
+        for(int j = 1 << l; j < step_max; j++)
         {
             tablo->tab[2*j] = tablo->tab[2*j + 1] + tablo->tab[j];
             tablo->tab[2*j + 1] = tablo->tab[j];
