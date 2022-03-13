@@ -2,7 +2,9 @@
 #include <math.h>
 #include <string.h>
 #include "radix_sort.h"
+#ifdef USE_PAR_PRE_SUF
 #include "parallel_prefix_suffix.h"
+#endif // USE_PAR_PRE_SUF
 
 struct {
     int *radix_sort_bits_for_i;
@@ -75,22 +77,30 @@ void split(int *input_array, int *flags, int *output_array, int array_size)
 
 void prefix(const int *flags, int *output_array, int array_size)
 {
+#ifdef USE_PAR_PRE_SUF
+    memcpy(output_array, flags, array_size * sizeof(int));
+    parallel_prefix(output_array, array_size);
+#else
     output_array[0] = flags[0];
     for(int i = 1; i < array_size; i++)
     {
         output_array[i] = output_array[i - 1] + flags[i];
     }
-    /*memcpy(output_array, flags, array_size * sizeof(int));
-    parallel_prefix(output_array, array_size);*/
+#endif // USE_PAR_PRE_SUF
 }
 
 void suffix(const int *flags, int *output_array, int array_size)
 {
+#ifdef USE_PAR_PRE_SUF
+    memcpy(output_array, flags, array_size * sizeof(int));
+    parallel_suffix(output_array, array_size);
+#else
     output_array[array_size - 1] = flags[array_size - 1];
     for(int i = array_size - 2; i >= 0; i--)
     {
         output_array[i] = output_array[i + 1] + flags[i];
     }
+#endif // USE_PAR_PRE_SUF
 }
 
 void revert(const int *input_array, int *output_array, int array_size)
