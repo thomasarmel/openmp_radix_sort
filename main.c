@@ -12,14 +12,14 @@ void print_array(Config *config, int *array);
 
 int main(int argc, char *argv[])
 {
-    struct timeval start_elapsed_time, end_elapsed_time;
-    Config config = init_config(argc, argv);
-    if (config.nb_threads > 0)
+    struct timeval start_elapsed_time, end_elapsed_time; // Measure elapsed time
+    Config config = init_config(argc, argv); // Initialize config
+    if (config.nb_threads > 0) // If number of threads is specified
     {
         omp_set_num_threads(config.nb_threads);
     }
     int *A = read_input_array(&config);
-    int* original_array = (int*) malloc(config.array_size * sizeof(int));
+    int* original_array = (int*) malloc(config.array_size * sizeof(int)); // Copy of the original array
     memcpy(original_array, A, config.array_size * sizeof(int));
 
     gettimeofday(&start_elapsed_time, NULL);
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 int* read_input_array(Config *config)
 {
     int *array = (int*)malloc(sizeof(int) * config->array_size);
-    if (config->input_file == NULL)
+    if (config->input_file == NULL) // If no input array specified, generate random
     {
         srand(time(NULL));
         for (int i = 0; i < config->array_size; i++)
@@ -49,6 +49,7 @@ int* read_input_array(Config *config)
         }
         return array;
     }
+    // Else read from file
     char *line = NULL;
     size_t len = 0;
     if (getline(&line, &len, config->input_file) == -1)

@@ -5,11 +5,11 @@
 
 struct config
 {
-    int N;
-    int array_size;
-    FILE *input_file;
-    FILE *output_file;
-    int nb_threads;
+    int N; // Max number
+    int array_size; // Size of array
+    FILE *input_file; // Input file descriptor
+    FILE *output_file; // Output file descriptor (random numbers if not specified)
+    int nb_threads; // Number of threads, if specified
 };
 typedef struct config Config;
 

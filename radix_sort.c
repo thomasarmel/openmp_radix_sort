@@ -13,7 +13,7 @@ struct {
     int *split_ldown;
     int *split_lup;
     int *split_reversed_flags;
-} radix_global_pre_allocated_heap_arrays;
+} radix_global_pre_allocated_heap_arrays; // Preallocate heap arrays for radix sort (avoid costly malloc/free)
 
 void permute(const int *input_array, const int *indexes_array, int *output_array, int array_size);
 void split(int *input_array, int *flags, int *output_array, int array_size);
@@ -25,12 +25,12 @@ void free_heap_arrays();
 
 void radix_sort(int *array, int size, int max_value)
 {
-    pre_allocate_heap_arrays(size);
+    pre_allocate_heap_arrays(size); // Preallocate heap arrays for radix sort (avoid costly malloc/free)
     int nb_bits = (int)log2(max_value) + 1;
     for(int i = 0; i < nb_bits; i++)
     {
         #pragma omp parallel for
-        for(int j = 0; j < size; j++)
+        for(int j = 0; j < size; j++) // bit(i)
         {
             radix_global_pre_allocated_heap_arrays.radix_sort_bits_for_i[j] = (array[j] >> i) & 1;
         }
@@ -38,9 +38,10 @@ void radix_sort(int *array, int size, int max_value)
         split(array, radix_global_pre_allocated_heap_arrays.radix_sort_bits_for_i, radix_global_pre_allocated_heap_arrays.radix_sort_tmp_array, size);
         memcpy(array, radix_global_pre_allocated_heap_arrays.radix_sort_tmp_array, size * sizeof(int));
     }
-    free_heap_arrays();
+    free_heap_arrays(); // Free heap arrays for radix sort (avoid costly malloc/free)
 }
 
+// Input = [5, 7, 3, 1, 4, 2, 7, 2], Indexes = [3, 4, 5, 6, 0, 1, 7, 2], Output = [4, 2, 2, 5, 7, 3, 1, 7]
 void permute(const int *input_array, const int *indexes_array, int *output_array, int array_size)
 {
     #pragma omp parallel for
@@ -56,7 +57,7 @@ void split(int *input_array, int *flags, int *output_array, int array_size)
     prefix(radix_global_pre_allocated_heap_arrays.split_reversed_flags, radix_global_pre_allocated_heap_arrays.split_ldown, array_size);
     suffix(flags, radix_global_pre_allocated_heap_arrays.split_lup, array_size);
     #pragma omp parallel for
-    for(int i = 0; i < array_size; i++)
+    for(int i = 0; i < array_size; i++) // Iup = SIZE - SUFFIX (Flags);
     {
         radix_global_pre_allocated_heap_arrays.split_lup[i] = (array_size + 1) - radix_global_pre_allocated_heap_arrays.split_lup[i];
     }
@@ -75,6 +76,7 @@ void split(int *input_array, int *flags, int *output_array, int array_size)
     permute(input_array, radix_global_pre_allocated_heap_arrays.split_indexes, output_array, array_size);
 }
 
+// Prefix sum, use naive iterative version if USE_PAR_PRE_SUF is not defined
 void prefix(const int *flags, int *output_array, int array_size)
 {
 #ifdef USE_PAR_PRE_SUF
@@ -89,6 +91,7 @@ void prefix(const int *flags, int *output_array, int array_size)
 #endif // USE_PAR_PRE_SUF
 }
 
+// Suffix sum, use naive iterative version if USE_PAR_PRE_SUF is not defined
 void suffix(const int *flags, int *output_array, int array_size)
 {
 #ifdef USE_PAR_PRE_SUF
@@ -103,6 +106,7 @@ void suffix(const int *flags, int *output_array, int array_size)
 #endif // USE_PAR_PRE_SUF
 }
 
+// Revert boolean array
 void revert(const int *input_array, int *output_array, int array_size)
 {
     #pragma omp parallel for

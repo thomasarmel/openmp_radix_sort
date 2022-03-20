@@ -53,6 +53,7 @@ Config init_config(int argc, char **argv)
     return config;
 }
 
+// Close file descriptors
 void clean_config(Config *config)
 {
     if(config->input_file != NULL)

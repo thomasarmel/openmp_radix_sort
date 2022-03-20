@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -fopenmp -Wall -O3
+CFLAGS = -fopenmp -Wall -O3 -march=native
 CLIBS = -lm
 
 all: main.o config.o radix_sort.o
